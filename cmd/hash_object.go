@@ -3,6 +3,7 @@ package cmd
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -36,6 +37,7 @@ var hashObjectCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		oid := hash_data(data)
+		fmt.Println("object OID: ", oid)
 		outFile, err := os.Create(GIT_DIR + "/objects/" + oid)
 		if err != nil {
 			log.Fatal(err)
