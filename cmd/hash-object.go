@@ -20,32 +20,22 @@ func hashData(data []byte) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func hashObject(path, type_ string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return err
-	}
+func hashObject(data []byte, type_ string) (string, error) {
 	var buff []byte
 	buff = append(buff, []byte(type_)...)
 	buff = append(buff, '\x00')
 	buff = append(buff, data...)
 	oid := hashData(buff)
-	fmt.Println("object OID: ", oid)
 	outFile, err := os.Create(GIT_DIR + "/objects/" + oid)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer outFile.Close()
 	_, err = outFile.Write(buff)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return oid, nil
 }
 
 var hashObjectCmd = &cobra.Command{
@@ -56,9 +46,21 @@ var hashObjectCmd = &cobra.Command{
 			log.Fatal("file args is required")
 		}
 		path := args[0]
-		err := hashObject(path, "blob")
+
+		file, err := os.Open(path)
 		if err != nil {
 			log.Fatal(err)
 		}
+		defer file.Close()
+		data, err := io.ReadAll(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		oid, err := hashObject(data, "blob")
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("object OID: ", oid)
 	},
 }

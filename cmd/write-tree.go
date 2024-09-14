@@ -22,24 +22,48 @@ func isEscaped(path string) bool {
 	return false
 }
 
-func writeTree(path string) error {
+type Entry struct {
+	Name string
+	Type string
+	OID  string
+}
+
+func writeTree(path string) (string, error) {
+	var entries []Entry
 	files, err := os.ReadDir(path)
 	if err != nil {
-		return err
+		return "", err
 	}
+
 	for _, file := range files {
 		filePath := path + "/" + file.Name()
 		if isEscaped(filePath) {
 			continue
 		}
+		var type_ string
+		var oid string
+
 		if file.IsDir() {
-			writeTree(filePath)
+			type_ = "tree"
+			oid, _ = writeTree(filePath)
 		} else {
 			file, _ := os.ReadFile(filePath)
-			fmt.Println(filePath, " - ", hashData(file))
+			type_ = "blob"
+			oid, _ = hashObject(file, "blob")
 		}
+		entries = append(entries, Entry{
+			Name: file.Name(),
+			Type: type_,
+			OID:  oid,
+		})
+
 	}
-	return nil
+	var treeNodes []string
+	for _, entry := range entries {
+		treeNodes = append(treeNodes, fmt.Sprintf("%s %s %s", entry.Type, entry.OID, entry.Name))
+	}
+	tree := strings.Join(treeNodes, "\n")
+	return hashObject([]byte(tree), "tree")
 }
 
 var writeTreeCmd = &cobra.Command{
@@ -49,10 +73,11 @@ var writeTreeCmd = &cobra.Command{
 		if len(args) == 0 {
 			log.Fatal("file args is required")
 		}
-		err := writeTree(args[0])
+		oid, err := writeTree(args[0])
 		if err != nil {
 			log.Fatal(err)
 		}
+		fmt.Println("oid is: ", oid)
 
 	},
 }
