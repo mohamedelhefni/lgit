@@ -59,6 +59,9 @@ func treeIter(oid string) ([]Entry, error) {
 
 	for _, object := range strings.Split(tree, "\n") {
 		objectArr := strings.Split(object, " ")
+		if len(objectArr) < 2 {
+			continue
+		}
 		type_, oid, name := objectArr[0], objectArr[1], objectArr[2]
 		entries = append(entries, Entry{
 			Name: name,
