@@ -18,7 +18,13 @@ func commit(message string) error {
 	if err != nil {
 		return err
 	}
-	commitHeaders := fmt.Sprintf("tree %s\n\n%s\n", tree, message)
+	commitHeaders := fmt.Sprintf("tree %s\n", tree)
+	head, err := base.GetHead()
+	if err == nil {
+		commitHeaders += fmt.Sprintf("parent %s\n", head)
+	}
+	commitHeaders += "\n"
+	commitHeaders += fmt.Sprintf("%s\n", message)
 	oid, err := base.HashObject([]byte(commitHeaders), "commit")
 	fmt.Println("commit id: ", oid)
 	return base.SetHead(oid)

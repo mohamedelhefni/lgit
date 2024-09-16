@@ -11,6 +11,11 @@ func SetHead(oid string) error {
 	return os.WriteFile(GIT_DIR+"/HEAD", []byte(oid), 0644)
 }
 
+func GetHead() (string, error) {
+	content, err := os.ReadFile(GIT_DIR + "/HEAD")
+	return string(content), err
+}
+
 func HashData(data []byte) string {
 	hash := sha1.Sum(data)
 	return hex.EncodeToString(hash[:])
