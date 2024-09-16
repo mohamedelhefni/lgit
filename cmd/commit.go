@@ -21,7 +21,7 @@ func commit(message string) error {
 	commitHeaders := fmt.Sprintf("tree %s\n\n%s\n", tree, message)
 	oid, err := base.HashObject([]byte(commitHeaders), "commit")
 	fmt.Println("commit id: ", oid)
-	return err
+	return base.SetHead(oid)
 }
 
 var commitCmd = &cobra.Command{
