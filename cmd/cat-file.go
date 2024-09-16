@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -13,20 +12,23 @@ func init() {
 	rootCmd.AddCommand(catFileCmd)
 }
 
-func catFile(path, type_ string) error {
-	file, err := os.Open(path)
+func getObject(oid, type_ string) (string, error) {
+	file, err := os.Open(GIT_DIR + "/objects/" + oid)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer file.Close()
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	fmt.Println(string(data[len([]byte(type_))+1:]))
+	return string(data[len([]byte(type_))+1:]), nil
+}
 
-	return nil
+func catFile(oid, type_ string) error {
+	_, err := getObject(oid, type_)
+	return err
 }
 
 var catFileCmd = &cobra.Command{
@@ -36,8 +38,7 @@ var catFileCmd = &cobra.Command{
 		if len(args) == 0 {
 			log.Fatal("file args is required")
 		}
-		path := GIT_DIR + "/objects/" + args[0]
-		err := catFile(path, "blob")
+		err := catFile(args[0], "blob")
 		if err != nil {
 			log.Fatal(err)
 		}
