@@ -23,7 +23,7 @@ func commit(message string) error {
 	if err == nil {
 		commitHeaders += fmt.Sprintf("parent %s\n", head)
 	}
-	commitHeaders += "\n"
+	commitHeaders += "\n\n"
 	commitHeaders += fmt.Sprintf("%s\n", message)
 	oid, err := base.HashObject([]byte(commitHeaders), "commit")
 	fmt.Println("commit id: ", oid)
