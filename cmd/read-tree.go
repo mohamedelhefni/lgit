@@ -14,6 +14,26 @@ func init() {
 	rootCmd.AddCommand(readTreeCmd)
 }
 
+func emptyCurrentDir(path string) error {
+	files, err := os.ReadDir(".")
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		filePath := path + "/" + file.Name()
+		if isEscaped(filePath) {
+			continue
+		}
+		if !file.IsDir() {
+			os.Remove(filePath)
+		} else {
+			os.RemoveAll(filePath)
+		}
+	}
+	return nil
+}
+
 func treeIter(oid string) ([]Entry, error) {
 	var entries []Entry
 	tree, err := getObject(oid, "tree")
@@ -69,6 +89,7 @@ func getTree(oid, basePath string) (map[string]string, error) {
 }
 
 func readTree(oid string) error {
+	emptyCurrentDir(".")
 	tree, err := getTree(oid, "./")
 	if err != nil {
 		return err

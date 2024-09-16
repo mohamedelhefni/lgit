@@ -18,6 +18,8 @@ func isEscaped(path string) bool {
 		return true
 	} else if strings.Contains(path, ".git") {
 		return true
+	} else if strings.Contains(path, "lgit") {
+		return true
 	}
 	return false
 }
