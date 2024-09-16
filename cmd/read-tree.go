@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"lgit/base"
 	"log"
 	"os"
 	"path/filepath"
@@ -36,7 +37,7 @@ func emptyCurrentDir(path string) error {
 
 func treeIter(oid string) ([]Entry, error) {
 	var entries []Entry
-	tree, err := getObject(oid, "tree")
+	tree, err := base.GetObject(oid, "tree")
 	if err != nil {
 		return entries, err
 	}
@@ -99,7 +100,7 @@ func readTree(oid string) error {
 		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 			return err
 		}
-		data, err := getObject(oid, "blob")
+		data, err := base.GetObject(oid, "blob")
 		if err != nil {
 			return err
 		}

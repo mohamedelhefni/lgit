@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"lgit/base"
 	"log"
 	"os"
 	"strings"
@@ -51,7 +52,7 @@ func writeTree(path string) (string, error) {
 		} else {
 			file, _ := os.ReadFile(filePath)
 			type_ = "blob"
-			oid, _ = hashObject(file, "blob")
+			oid, _ = base.HashObject(file, "blob")
 		}
 		entries = append(entries, Entry{
 			Name: file.Name(),
@@ -65,7 +66,7 @@ func writeTree(path string) (string, error) {
 		treeNodes = append(treeNodes, fmt.Sprintf("%s %s %s", entry.Type, entry.OID, entry.Name))
 	}
 	tree := strings.Join(treeNodes, "\n")
-	return hashObject([]byte(tree), "tree")
+	return base.HashObject([]byte(tree), "tree")
 }
 
 var writeTreeCmd = &cobra.Command{

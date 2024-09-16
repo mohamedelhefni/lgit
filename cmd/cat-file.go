@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"io"
+	"lgit/base"
 	"log"
-	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -12,22 +11,8 @@ func init() {
 	rootCmd.AddCommand(catFileCmd)
 }
 
-func getObject(oid, type_ string) (string, error) {
-	file, err := os.Open(GIT_DIR + "/objects/" + oid)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return "", err
-	}
-
-	return string(data[len([]byte(type_))+1:]), nil
-}
-
 func catFile(oid, type_ string) error {
-	_, err := getObject(oid, type_)
+	_, err := base.GetObject(oid, type_)
 	return err
 }
 

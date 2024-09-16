@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"io"
+	"lgit/base"
 	"log"
 	"os"
 
@@ -13,29 +12,6 @@ import (
 
 func init() {
 	rootCmd.AddCommand(hashObjectCmd)
-}
-
-func hashData(data []byte) string {
-	hash := sha1.Sum(data)
-	return hex.EncodeToString(hash[:])
-}
-
-func hashObject(data []byte, type_ string) (string, error) {
-	var buff []byte
-	buff = append(buff, []byte(type_)...)
-	buff = append(buff, '\x00')
-	buff = append(buff, data...)
-	oid := hashData(buff)
-	outFile, err := os.Create(GIT_DIR + "/objects/" + oid)
-	if err != nil {
-		return "", err
-	}
-	defer outFile.Close()
-	_, err = outFile.Write(buff)
-	if err != nil {
-		return "", err
-	}
-	return oid, nil
 }
 
 var hashObjectCmd = &cobra.Command{
@@ -57,7 +33,7 @@ var hashObjectCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		oid, err := hashObject(data, "blob")
+		oid, err := base.HashObject(data, "blob")
 		if err != nil {
 			log.Fatal(err)
 		}
