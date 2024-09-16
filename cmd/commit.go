@@ -14,7 +14,7 @@ func init() {
 }
 
 func commit(message string) error {
-	tree, err := writeTree("./")
+	tree, err := base.WriteTree("./")
 	if err != nil {
 		return err
 	}
