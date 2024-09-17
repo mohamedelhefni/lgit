@@ -21,13 +21,13 @@ func commit(message string) error {
 	commitHeaders := fmt.Sprintf("tree %s\n", tree)
 	head, err := base.GetRef("HEAD")
 	if err == nil {
-		commitHeaders += fmt.Sprintf("parent %s\n", head)
+		commitHeaders += fmt.Sprintf("parent %s\n", head.Value)
 	}
 	commitHeaders += "\n\n"
 	commitHeaders += fmt.Sprintf("%s\n", message)
 	oid, err := base.HashObject([]byte(commitHeaders), "commit")
 	fmt.Println("commit id: ", oid)
-	return base.SetRef("HEAD", oid)
+	return base.SetRef("HEAD", base.RefValue{Value: oid, Symbolic: false})
 }
 
 var commitCmd = &cobra.Command{

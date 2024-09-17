@@ -15,3 +15,8 @@ type Entry struct {
 	Type string
 	OID  string
 }
+
+type RefValue struct {
+	Value    string
+	Symbolic bool
+}

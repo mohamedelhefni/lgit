@@ -88,7 +88,7 @@ func IterRefs() (chan RefResult, error) {
 			}
 			ch <- RefResult{
 				Refname: refname,
-				Ref:     ref,
+				Ref:     ref.Value,
 			}
 		}
 	}()

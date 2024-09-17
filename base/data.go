@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"strings"
 )
 
 func GetOID(name string) string {
@@ -23,8 +24,8 @@ func GetOID(name string) string {
 	}
 
 	for _, ref := range refs {
-		if oid, err := GetRef(ref); err == nil {
-			return oid
+		if ref, err := GetRef(ref); err == nil {
+			return ref.Value
 		}
 	}
 
@@ -35,21 +36,31 @@ func GetOID(name string) string {
 	return ""
 }
 
-func SetRef(ref, oid string) error {
+func SetRef(ref string, value RefValue) error {
 	refPath := GIT_DIR + "/" + ref
+	ref, _, _ = getRef(ref)
 	if err := os.MkdirAll(path.Dir(refPath), os.ModePerm); err != nil {
 		return err
 	}
-	return os.WriteFile(refPath, []byte(oid), 0644)
+	return os.WriteFile(refPath, []byte(value.Value), 0644)
 }
 
-func GetRef(ref string) (string, error) {
+func GetRef(ref string) (RefValue, error) {
+	_, refValue, err := getRef(ref)
+	return refValue, err
+}
+
+func getRef(ref string) (string, RefValue, error) {
 	refPath := GIT_DIR + "/" + ref
 	if stat, err := os.Stat(refPath); err == nil && !stat.IsDir() {
 		content, err := os.ReadFile(refPath)
-		return string(content), err
+		value := string(content)
+		if value != "" && strings.HasPrefix(value, "ref:") {
+			return getRef(strings.TrimSpace(strings.Split(value, ":")[1]))
+		}
+		return ref, RefValue{Value: value, Symbolic: false}, err
 	}
-	return "", errors.New("file not exist")
+	return "", RefValue{}, errors.New("not valid ref")
 }
 
 func HashData(data []byte) string {
