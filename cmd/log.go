@@ -14,9 +14,12 @@ func init() {
 }
 
 func showCommits(argOid string) error {
-	var oid string
-	oid = argOid
-	for oid != "" {
+	iter, err := base.IterCommits([]string{argOid})
+	if err != nil {
+		return err
+	}
+
+	for oid := range iter {
 		commit, err := base.GetCommit(oid)
 		if err != nil {
 			fmt.Println("err: ", err)
@@ -24,8 +27,8 @@ func showCommits(argOid string) error {
 		}
 		fmt.Println("commit: ", oid)
 		fmt.Println(strings.TrimSpace(commit.Message))
-		oid = commit.Parent
 	}
+
 	return nil
 }
 

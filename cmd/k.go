@@ -46,7 +46,7 @@ func k() error {
 		if err != nil {
 			return err
 		}
-		dot.WriteString(fmt.Sprintf("\"%s\" [shape=box style=filled label=\"%s\"]\n", oid, oid[:10]))
+		dot.WriteString(fmt.Sprintf("\"%s\" [shape=box style=filled label=\"%s\"]\n", oid, commit))
 		if commit.Parent != "" {
 			dot.WriteString(fmt.Sprintf("\"%s\" -> \"%s\"\n", oid, commit.Parent))
 		}
