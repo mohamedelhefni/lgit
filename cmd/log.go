@@ -44,7 +44,7 @@ var logCmd = &cobra.Command{
 		if len(args) != 0 {
 			oid = args[0]
 		}
-		err := showCommits(oid)
+		err := showCommits(base.GetOID(oid))
 		if err != nil {
 			log.Fatal(err)
 		}

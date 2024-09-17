@@ -3,17 +3,50 @@ package base
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"io"
 	"os"
+	"path"
+	"regexp"
 )
 
+func GetOID(name string) string {
+	refs := []string{
+		name,
+		fmt.Sprintf("refs/%s", name),
+		fmt.Sprintf("refs/tags/%s", name),
+		fmt.Sprintf("refs/heads/%s", name),
+	}
+
+	for _, ref := range refs {
+		if oid, err := GetRef(ref); err == nil {
+			return oid
+		}
+	}
+
+	// check if valid sha1
+	if match, err := regexp.MatchString("^[a-fA-F0-9]{40}$", name); err == nil && match {
+		return name
+	}
+	return ""
+}
+
 func SetRef(ref, oid string) error {
-	return os.WriteFile(GIT_DIR+"/"+ref, []byte(oid), 0644)
+	refPath := GIT_DIR + "/" + ref
+	if err := os.MkdirAll(path.Dir(refPath), os.ModePerm); err != nil {
+		return err
+	}
+	return os.WriteFile(refPath, []byte(oid), 0644)
 }
 
 func GetRef(ref string) (string, error) {
-	content, err := os.ReadFile(GIT_DIR + "/" + ref)
-	return string(content), err
+	refPath := GIT_DIR + "/" + ref
+	if stat, err := os.Stat(refPath); err == nil && !stat.IsDir() {
+		content, err := os.ReadFile(refPath)
+		return string(content), err
+	}
+	return "", errors.New("file not exist")
 }
 
 func HashData(data []byte) string {

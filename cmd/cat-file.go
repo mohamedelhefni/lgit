@@ -23,7 +23,7 @@ var catFileCmd = &cobra.Command{
 		if len(args) == 0 {
 			log.Fatal("file args is required")
 		}
-		err := catFile(args[0], "blob")
+		err := catFile(base.GetOID(args[0]), "blob")
 		if err != nil {
 			log.Fatal(err)
 		}

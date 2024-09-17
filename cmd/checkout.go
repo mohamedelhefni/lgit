@@ -29,7 +29,7 @@ var checkoutCmd = &cobra.Command{
 		if len(args) == 0 {
 			log.Fatal("file args is required")
 		}
-		err := checkout(args[0])
+		err := checkout(base.GetOID(args[0]))
 		if err != nil {
 			log.Fatal(err)
 		}
