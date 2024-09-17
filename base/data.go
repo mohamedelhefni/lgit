@@ -8,60 +8,8 @@ import (
 	"io"
 	"os"
 	"path"
-	"path/filepath"
 	"regexp"
 )
-
-type RefResult struct {
-	Refname string
-	Ref     string
-}
-
-func (r RefResult) String() string {
-	return r.Refname + " -> " + r.Ref
-}
-
-func IterRefs() (chan RefResult, error) {
-	ch := make(chan RefResult)
-
-	go func() {
-		defer close(ch)
-		refs := []string{"HEAD"}
-
-		err := filepath.Walk(filepath.Join(GIT_DIR, "refs"),
-			func(path string, info os.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
-				if !info.IsDir() {
-					relPath, err := filepath.Rel(GIT_DIR, path)
-					if err != nil {
-						return err
-					}
-					refs = append(refs, relPath)
-				}
-				return nil
-			})
-
-		if err != nil {
-			fmt.Println("Error walking through refs:", err)
-			return
-		}
-
-		for _, refname := range refs {
-			ref, err := GetRef(refname)
-			if err != nil {
-				fmt.Printf("Error getting ref for %s: %v\n", refname, err)
-				continue
-			}
-			ch <- RefResult{
-				Refname: refname,
-				Ref:     ref,
-			}
-		}
-	}()
-	return ch, nil
-}
 
 func GetOID(name string) string {
 	if name == "@" {

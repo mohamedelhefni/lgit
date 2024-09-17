@@ -2,7 +2,6 @@ package base
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,39 +36,6 @@ func emptyCurrentDir(path string) error {
 		}
 	}
 	return nil
-}
-
-func treeIter(oid string) ([]Entry, error) {
-	var entries []Entry
-	tree, err := func() (string, error) {
-		file, err := os.Open(GIT_DIR + "/objects/" + oid)
-		if err != nil {
-			return "", err
-		}
-		defer file.Close()
-		data, err := io.ReadAll(file)
-		if err != nil {
-			return "", err
-		}
-		return string(data[len([]byte("tree"))+1:]), nil
-	}()
-	if err != nil {
-		return entries, err
-	}
-
-	for _, object := range strings.Split(tree, "\n") {
-		objectArr := strings.Split(object, " ")
-		if len(objectArr) < 2 {
-			continue
-		}
-		type_, oid, name := objectArr[0], objectArr[1], objectArr[2]
-		entries = append(entries, Entry{
-			Name: name,
-			Type: type_,
-			OID:  oid,
-		})
-	}
-	return entries, nil
 }
 
 func getTree(oid, basePath string) (map[string]string, error) {
