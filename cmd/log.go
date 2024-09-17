@@ -16,13 +16,6 @@ func init() {
 func showCommits(argOid string) error {
 	var oid string
 	oid = argOid
-	if argOid == "" {
-		head, err := base.GetRef("HEAD")
-		if err != nil {
-			return err
-		}
-		oid = head
-	}
 	for oid != "" {
 		commit, err := base.GetCommit(oid)
 		if err != nil {
@@ -44,6 +37,10 @@ var logCmd = &cobra.Command{
 		if len(args) != 0 {
 			oid = args[0]
 		}
+		if oid == "" {
+			oid = "@"
+		}
+
 		err := showCommits(base.GetOID(oid))
 		if err != nil {
 			log.Fatal(err)

@@ -12,6 +12,9 @@ import (
 )
 
 func GetOID(name string) string {
+	if name == "@" {
+		name = "HEAD"
+	}
 	refs := []string{
 		name,
 		fmt.Sprintf("refs/%s", name),

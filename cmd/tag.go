@@ -25,7 +25,7 @@ var tagCmd = &cobra.Command{
 		var tagOid string
 
 		if name, err := cmd.Flags().GetString("name"); err != nil || name == "" {
-			if len(args) > 1 {
+			if len(args) >= 1 {
 				tagName = args[0]
 			}
 		} else {
@@ -35,6 +35,8 @@ var tagCmd = &cobra.Command{
 		if oid, err := cmd.Flags().GetString("oid"); err != nil || oid == "" {
 			if len(args) >= 2 {
 				tagOid = args[1]
+			} else {
+				tagOid = "@"
 			}
 		} else {
 			tagOid = oid
