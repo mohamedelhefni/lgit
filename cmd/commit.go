@@ -19,7 +19,7 @@ func commit(message string) error {
 		return err
 	}
 	commitHeaders := fmt.Sprintf("tree %s\n", tree)
-	head, err := base.GetHead()
+	head, err := base.GetRef("HEAD")
 	if err == nil {
 		commitHeaders += fmt.Sprintf("parent %s\n", head)
 	}
@@ -27,7 +27,7 @@ func commit(message string) error {
 	commitHeaders += fmt.Sprintf("%s\n", message)
 	oid, err := base.HashObject([]byte(commitHeaders), "commit")
 	fmt.Println("commit id: ", oid)
-	return base.SetHead(oid)
+	return base.SetRef("HEAD", oid)
 }
 
 var commitCmd = &cobra.Command{

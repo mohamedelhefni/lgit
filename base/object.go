@@ -7,12 +7,12 @@ import (
 	"os"
 )
 
-func SetHead(oid string) error {
-	return os.WriteFile(GIT_DIR+"/HEAD", []byte(oid), 0644)
+func SetRef(ref, oid string) error {
+	return os.WriteFile(GIT_DIR+"/"+ref, []byte(oid), 0644)
 }
 
-func GetHead() (string, error) {
-	content, err := os.ReadFile(GIT_DIR + "/HEAD")
+func GetRef(ref string) (string, error) {
+	content, err := os.ReadFile(GIT_DIR + "/" + ref)
 	return string(content), err
 }
 

@@ -17,7 +17,7 @@ func showCommits(argOid string) error {
 	var oid string
 	oid = argOid
 	if argOid == "" {
-		head, err := base.GetHead()
+		head, err := base.GetRef("HEAD")
 		if err != nil {
 			return err
 		}
