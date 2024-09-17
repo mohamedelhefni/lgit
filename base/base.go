@@ -40,7 +40,7 @@ func emptyCurrentDir(path string) error {
 
 func getTree(oid, basePath string) (map[string]string, error) {
 	result := make(map[string]string)
-	entries, err := treeIter(oid)
+	entries, err := IterTree(oid)
 	if err != nil {
 		return nil, err
 	}

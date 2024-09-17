@@ -1,12 +1,48 @@
 package base
 
 import (
+	"container/list"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+func IterCommits(initOids []string) (chan string, error) {
+	ch := make(chan string)
+
+	go func() {
+		defer close(ch)
+		oids := list.New()
+		for _, oid := range initOids {
+			oids.PushBack(oid)
+		}
+		visited := map[string]bool{}
+		for oids.Len() > 0 {
+			ele := oids.Front()
+			oids.Remove(ele)
+			oid := ele.Value.(string)
+			if oid == "" || visited[oid] {
+				continue
+			}
+			ch <- oid
+			visited[oid] = true
+			commit, err := GetCommit(oid)
+			if err != nil {
+				fmt.Println("err: ", err)
+				continue
+			}
+			if commit.Parent != "" {
+				oids.PushBack(commit.Parent)
+			}
+
+		}
+
+	}()
+
+	return ch, nil
+}
 
 type RefResult struct {
 	Refname string
