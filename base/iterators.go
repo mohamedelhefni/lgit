@@ -53,7 +53,19 @@ func (r RefResult) String() string {
 	return r.Refname + " -> " + r.Ref
 }
 
-func IterRefs(deref bool) (chan RefResult, error) {
+func IterBranches() ([]string, error) {
+	var branches []string
+	res, err := IterRefs("refs/heads/", true)
+	if err != nil {
+		return branches, err
+	}
+	for branch := range res {
+		branches = append(branches, branch.Refname)
+	}
+	return branches, nil
+}
+
+func IterRefs(prefix string, deref bool) (chan RefResult, error) {
 	ch := make(chan RefResult)
 
 	go func() {
@@ -81,6 +93,9 @@ func IterRefs(deref bool) (chan RefResult, error) {
 		}
 
 		for _, refname := range refs {
+			if !strings.HasPrefix(refname, prefix) {
+				continue
+			}
 			ref, err := GetRef(refname, deref)
 			if err != nil {
 				fmt.Printf("Error getting ref for %s: %v\n", refname, err)

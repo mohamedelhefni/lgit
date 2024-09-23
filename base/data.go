@@ -61,10 +61,11 @@ func getRef(ref string, deref bool) (string, RefValue, error) {
 	if stat, err := os.Stat(refPath); err == nil && !stat.IsDir() {
 		content, err := os.ReadFile(refPath)
 		value := string(content)
-		if value != "" && strings.HasPrefix(value, "ref:") && deref {
+		symobilc := strings.HasPrefix(value, "ref:")
+		if value != "" && symobilc && deref {
 			return getRef(strings.TrimSpace(strings.Split(value, ":")[1]), true)
 		}
-		return ref, RefValue{Value: value, Symbolic: false}, err
+		return ref, RefValue{Value: value, Symbolic: symobilc}, err
 	}
 	return "", RefValue{}, errors.New("not valid ref")
 }

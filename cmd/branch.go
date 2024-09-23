@@ -26,6 +26,23 @@ var branchCmd = &cobra.Command{
 		var branchName string
 		var branchOid string
 
+		if len(args) == 0 {
+			current, _ := base.GetBranchName()
+			branches, err := base.IterBranches()
+			if err != nil {
+				log.Fatal(err)
+			}
+			var prefix string
+			for _, branch := range branches {
+				prefix = "-"
+				if current == branch {
+					prefix = "*"
+				}
+				fmt.Println(prefix + " " + branch)
+			}
+			return
+		}
+
 		if name, err := cmd.Flags().GetString("name"); err != nil || name == "" {
 			if len(args) >= 1 {
 				branchName = args[0]

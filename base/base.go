@@ -7,6 +7,17 @@ import (
 	"strings"
 )
 
+func GetBranchName() (string, error) {
+	HEAD, err := GetRef("HEAD", false)
+	if err != nil {
+		return "", err
+	}
+	if !HEAD.Symbolic {
+		return "", nil
+	}
+	return HEAD.Value, nil
+}
+
 func isEscaped(path string) bool {
 	if strings.Contains(path, GIT_DIR) {
 		return true

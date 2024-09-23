@@ -20,7 +20,7 @@ func k() error {
 
 	oids := make(map[string]bool)
 
-	refs, err := base.IterRefs(false)
+	refs, err := base.IterRefs("", false)
 	if err != nil {
 		return err
 	}
