@@ -53,7 +53,7 @@ func (r RefResult) String() string {
 	return r.Refname + " -> " + r.Ref
 }
 
-func IterRefs() (chan RefResult, error) {
+func IterRefs(deref bool) (chan RefResult, error) {
 	ch := make(chan RefResult)
 
 	go func() {
@@ -81,7 +81,7 @@ func IterRefs() (chan RefResult, error) {
 		}
 
 		for _, refname := range refs {
-			ref, err := GetRef(refname)
+			ref, err := GetRef(refname, deref)
 			if err != nil {
 				fmt.Printf("Error getting ref for %s: %v\n", refname, err)
 				continue

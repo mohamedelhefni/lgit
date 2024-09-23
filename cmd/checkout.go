@@ -20,7 +20,7 @@ func checkout(oid string) error {
 	if err != nil {
 		return err
 	}
-	return base.SetRef("HEAD", base.RefValue{Value: oid, Symbolic: false})
+	return base.SetRef("HEAD", base.RefValue{Value: oid, Symbolic: false}, true)
 }
 
 var checkoutCmd = &cobra.Command{

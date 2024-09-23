@@ -24,7 +24,7 @@ func GetOID(name string) string {
 	}
 
 	for _, ref := range refs {
-		if ref, err := GetRef(ref); err == nil {
+		if ref, err := GetRef(ref, true); err == nil {
 			return ref.Value
 		}
 	}
@@ -36,27 +36,33 @@ func GetOID(name string) string {
 	return ""
 }
 
-func SetRef(ref string, value RefValue) error {
+func SetRef(ref string, value RefValue, deref bool) error {
 	refPath := GIT_DIR + "/" + ref
-	ref, _, _ = getRef(ref)
+	ref, _, _ = getRef(ref, deref)
 	if err := os.MkdirAll(path.Dir(refPath), os.ModePerm); err != nil {
 		return err
 	}
-	return os.WriteFile(refPath, []byte(value.Value), 0644)
+	var val string
+	if value.Symbolic {
+		val = "ref: " + value.Value
+	} else {
+		val = value.Value
+	}
+	return os.WriteFile(refPath, []byte(val), 0644)
 }
 
-func GetRef(ref string) (RefValue, error) {
-	_, refValue, err := getRef(ref)
+func GetRef(ref string, deref bool) (RefValue, error) {
+	_, refValue, err := getRef(ref, deref)
 	return refValue, err
 }
 
-func getRef(ref string) (string, RefValue, error) {
+func getRef(ref string, deref bool) (string, RefValue, error) {
 	refPath := GIT_DIR + "/" + ref
 	if stat, err := os.Stat(refPath); err == nil && !stat.IsDir() {
 		content, err := os.ReadFile(refPath)
 		value := string(content)
-		if value != "" && strings.HasPrefix(value, "ref:") {
-			return getRef(strings.TrimSpace(strings.Split(value, ":")[1]))
+		if value != "" && strings.HasPrefix(value, "ref:") && deref {
+			return getRef(strings.TrimSpace(strings.Split(value, ":")[1]), true)
 		}
 		return ref, RefValue{Value: value, Symbolic: false}, err
 	}

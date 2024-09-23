@@ -14,7 +14,7 @@ func init() {
 }
 
 func createTag(name, oid string) error {
-	return base.SetRef("refs/tags/"+name, base.RefValue{Value: oid, Symbolic: false})
+	return base.SetRef("refs/tags/"+name, base.RefValue{Value: oid, Symbolic: false}, true)
 }
 
 var tagCmd = &cobra.Command{

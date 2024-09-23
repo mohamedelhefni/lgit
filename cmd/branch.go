@@ -15,7 +15,7 @@ func init() {
 }
 
 func createBranch(name, oid string) error {
-	return base.SetRef("refs/heads/"+name, base.RefValue{Value: oid, Symbolic: false})
+	return base.SetRef("refs/heads/"+name, base.RefValue{Value: oid, Symbolic: false}, true)
 }
 
 var branchCmd = &cobra.Command{
