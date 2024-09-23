@@ -18,6 +18,14 @@ func isEscaped(path string) bool {
 	return false
 }
 
+func IsBranch(name string) bool {
+	info, err := os.Stat("refs/heads/" + name)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
 func emptyCurrentDir(path string) error {
 	files, err := os.ReadDir(".")
 	if err != nil {

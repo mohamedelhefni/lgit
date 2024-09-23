@@ -47,7 +47,7 @@ var branchCmd = &cobra.Command{
 		if err := createBranch(branchName, base.GetOID(branchOid)); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("Created barnch: ", branchName, "with oid: ", base.GetOID(branchOid[:10]))
+		fmt.Println("Created barnch: ", branchName, "with oid: ", base.GetOID(branchOid))
 
 	},
 }

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"lgit/base"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -27,6 +28,8 @@ var initCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+
+		base.SetRef("HEAD", base.RefValue{Symbolic: true, Value: "refs/heads/master"}, true)
 
 	},
 }

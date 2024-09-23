@@ -11,16 +11,25 @@ func init() {
 	rootCmd.AddCommand(checkoutCmd)
 }
 
-func checkout(oid string) error {
+func checkout(name string) error {
+	oid := base.GetOID(name)
 	commit, err := base.GetCommit(oid)
 	if err != nil {
 		return err
 	}
+
+	var HEAD base.RefValue
+	if base.IsBranch(name) {
+		HEAD = base.RefValue{Symbolic: true, Value: "refs/heads/" + name}
+	} else {
+		HEAD = base.RefValue{Symbolic: false, Value: oid}
+	}
+
 	err = base.ReadTree(commit.Tree)
 	if err != nil {
 		return err
 	}
-	return base.SetRef("HEAD", base.RefValue{Value: oid, Symbolic: false}, true)
+	return base.SetRef("HEAD", HEAD, true)
 }
 
 var checkoutCmd = &cobra.Command{
