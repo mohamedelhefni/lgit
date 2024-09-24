@@ -3,7 +3,6 @@ package base
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -24,8 +23,11 @@ func GetOID(name string) string {
 	}
 
 	for _, ref := range refs {
-		if ref, err := GetRef(ref, true); err == nil {
-			return ref.Value
+		if val, err := GetRef(ref, false); err == nil {
+			if val.Value != "" {
+				value, _ := GetRef(ref, true)
+				return value.Value
+			}
 		}
 	}
 
@@ -37,8 +39,8 @@ func GetOID(name string) string {
 }
 
 func SetRef(ref string, value RefValue, deref bool) error {
-	refPath := GIT_DIR + "/" + ref
 	ref, _, _ = getRef(ref, deref)
+	refPath := GIT_DIR + "/" + ref
 	if err := os.MkdirAll(path.Dir(refPath), os.ModePerm); err != nil {
 		return err
 	}
@@ -58,16 +60,22 @@ func GetRef(ref string, deref bool) (RefValue, error) {
 
 func getRef(ref string, deref bool) (string, RefValue, error) {
 	refPath := GIT_DIR + "/" + ref
+	var value string
 	if stat, err := os.Stat(refPath); err == nil && !stat.IsDir() {
 		content, err := os.ReadFile(refPath)
-		value := string(content)
-		symobilc := strings.HasPrefix(value, "ref:")
-		if value != "" && symobilc && deref {
-			return getRef(strings.TrimSpace(strings.Split(value, ":")[1]), true)
+		if err != nil {
+			return "", RefValue{}, err
 		}
-		return ref, RefValue{Value: value, Symbolic: symobilc}, err
+		value = string(content)
 	}
-	return "", RefValue{}, errors.New("not valid ref")
+	symobilc := value != "" && strings.HasPrefix(value, "ref:")
+	if symobilc {
+		value = strings.TrimSpace(strings.Split(value, ":")[1])
+		if deref {
+			return getRef(value, true)
+		}
+	}
+	return ref, RefValue{Value: value, Symbolic: symobilc}, nil
 }
 
 func HashData(data []byte) string {

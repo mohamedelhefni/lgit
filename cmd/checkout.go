@@ -29,7 +29,7 @@ func checkout(name string) error {
 	if err != nil {
 		return err
 	}
-	return base.SetRef("HEAD", HEAD, true)
+	return base.SetRef("HEAD", HEAD, false)
 }
 
 var checkoutCmd = &cobra.Command{
