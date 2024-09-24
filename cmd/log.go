@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"lgit/base"
 	"log"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -37,12 +36,12 @@ func showCommits(argOid string) error {
 			fmt.Println("err: ", err)
 			continue
 		}
-		var refsString string
-		if val, ok := refs[oid]; ok {
-			refsString = fmt.Sprintf("(%s)", strings.Join(val, ","))
-		}
-		fmt.Println("commit: ", oid, refsString)
-		fmt.Println(strings.TrimSpace(commit.Message))
+		printCommit(CommitArgs{
+			Oid:    oid,
+			Commit: commit,
+			Refs:   refs[oid],
+		})
+
 	}
 
 	return nil

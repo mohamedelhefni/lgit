@@ -12,10 +12,15 @@ func init() {
 }
 
 func show(oid string) error {
-	return base.SetRef("HEAD", base.RefValue{
-		Value:    oid,
-		Symbolic: false,
-	}, true)
+	commit, err := base.GetCommit(oid)
+	if err != nil {
+		return err
+	}
+	printCommit(CommitArgs{
+		Oid:    oid,
+		Commit: commit,
+	})
+	return nil
 }
 
 var showCmd = &cobra.Command{
@@ -24,7 +29,7 @@ var showCmd = &cobra.Command{
 		if len(args) == 0 {
 			log.Fatal("file args is required")
 		}
-		err := reset(base.GetOID(args[0]))
+		err := show(base.GetOID(args[0]))
 		if err != nil {
 			log.Fatal(err)
 		}
