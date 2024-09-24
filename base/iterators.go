@@ -60,7 +60,7 @@ func IterBranches() ([]string, error) {
 		return branches, err
 	}
 	for branch := range res {
-		branches = append(branches, branch.Refname)
+		branches = append(branches, GetBranchRelativeName(branch.Refname))
 	}
 	return branches, nil
 }

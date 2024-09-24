@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"lgit/base"
 	"log"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -23,6 +24,8 @@ var branchCmd = &cobra.Command{
 	Short: "checkout new branch",
 	Run: func(cmd *cobra.Command, args []string) {
 
+		// TODO: there is a bug getting current branch about symbolic and deref
+
 		var branchName string
 		var branchOid string
 
@@ -35,9 +38,10 @@ var branchCmd = &cobra.Command{
 			var prefix string
 			for _, branch := range branches {
 				prefix = "-"
-				if current == branch {
+				if strings.Contains(current, branch) {
 					prefix = "*"
 				}
+
 				fmt.Println(prefix + " " + branch)
 			}
 			return

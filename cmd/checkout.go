@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"lgit/base"
 	"log"
 
@@ -18,6 +19,7 @@ func checkout(name string) error {
 		return err
 	}
 
+	fmt.Println("branch name is", name)
 	var HEAD base.RefValue
 	if base.IsBranch(name) {
 		HEAD = base.RefValue{Symbolic: true, Value: "refs/heads/" + name}
@@ -38,7 +40,7 @@ var checkoutCmd = &cobra.Command{
 		if len(args) == 0 {
 			log.Fatal("file args is required")
 		}
-		err := checkout(base.GetOID(args[0]))
+		err := checkout(args[0])
 		if err != nil {
 			log.Fatal(err)
 		}

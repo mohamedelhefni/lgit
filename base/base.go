@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+func GetBranchRelativeName(path string) string {
+	parts := strings.Split(path, "/")
+	return parts[len(parts)-1]
+}
+
 func GetBranchName() (string, error) {
 	HEAD, err := GetRef("HEAD", false)
 	if err != nil {
@@ -15,7 +20,7 @@ func GetBranchName() (string, error) {
 	if !HEAD.Symbolic {
 		return "", nil
 	}
-	return HEAD.Value, nil
+	return GetBranchRelativeName(HEAD.Value), nil
 }
 
 func isEscaped(path string) bool {
@@ -30,7 +35,7 @@ func isEscaped(path string) bool {
 }
 
 func IsBranch(name string) bool {
-	info, err := os.Stat("refs/heads/" + name)
+	info, err := os.Stat(GIT_DIR + "/refs/heads/" + name)
 	if os.IsNotExist(err) {
 		return false
 	}
