@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"lgit/base"
 	"log"
 
@@ -19,7 +18,6 @@ func checkout(name string) error {
 		return err
 	}
 
-	fmt.Println("branch name is", name)
 	var HEAD base.RefValue
 	if base.IsBranch(name) {
 		HEAD = base.RefValue{Symbolic: true, Value: "refs/heads/" + name}

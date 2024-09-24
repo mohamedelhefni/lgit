@@ -29,7 +29,15 @@ var initCmd = &cobra.Command{
 			panic(err)
 		}
 
-		base.SetRef("HEAD", base.RefValue{Symbolic: true, Value: "refs/heads/master"}, true)
+		err = createBranch("master", base.GetOID("@"))
+		if err != nil {
+			panic(err)
+		}
+
+		err = base.SetRef("HEAD", base.RefValue{Symbolic: true, Value: "refs/heads/master"}, true)
+		if err != nil {
+			panic(err)
+		}
 
 	},
 }

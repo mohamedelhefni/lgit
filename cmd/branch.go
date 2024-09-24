@@ -24,8 +24,6 @@ var branchCmd = &cobra.Command{
 	Short: "checkout new branch",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// TODO: there is a bug getting current branch about symbolic and deref
-
 		var branchName string
 		var branchOid string
 
