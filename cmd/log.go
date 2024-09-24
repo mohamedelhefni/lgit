@@ -14,6 +14,18 @@ func init() {
 }
 
 func showCommits(argOid string) error {
+	refs := map[string][]string{}
+	refCh, err := base.IterRefs("", false)
+	if err != nil {
+		return err
+	}
+	for refResult := range refCh {
+		if _, ok := refs[refResult.Ref]; !ok {
+			refs[refResult.Ref] = []string{}
+		}
+		refs[refResult.Ref] = append(refs[refResult.Ref], refResult.Refname)
+	}
+
 	iter, err := base.IterCommits([]string{argOid})
 	if err != nil {
 		return err
@@ -25,7 +37,11 @@ func showCommits(argOid string) error {
 			fmt.Println("err: ", err)
 			continue
 		}
-		fmt.Println("commit: ", oid)
+		var refsString string
+		if val, ok := refs[oid]; ok {
+			refsString = fmt.Sprintf("(%s)", strings.Join(val, ","))
+		}
+		fmt.Println("commit: ", oid, refsString)
 		fmt.Println(strings.TrimSpace(commit.Message))
 	}
 
